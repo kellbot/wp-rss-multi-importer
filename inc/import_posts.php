@@ -724,11 +724,12 @@ if ($targetWindow==0){
 		 	$thisContent .=  '<span style="font-style:italic; font-size:16px;">'.$authorPrep.' <a '.$openWindow.' href='.$items["mylink"].' '.($noFollow==1 ? 'rel=nofollow':'').'">'.$items["myAuthor"].'</a></span>  ';  
 			}
 	$thisExcerpt = $items["myExcerpt"];
-	if(empty($thisExcerpt))
-		$thisExcerpt = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome);
+	$trimmedContent = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome);
 	
+	if(empty($thisExcerpt))
+		$thisExcerpt = $trimmedContent;
 
-	$thisContent .= $thisExcerpt;
+	$thisContent .= $trimmedContent;
 
 	if ($addSource==1){
 		
