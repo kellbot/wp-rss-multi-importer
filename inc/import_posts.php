@@ -545,7 +545,16 @@ if (empty($myfeeds)){
 
 
 
-				$myarray[] = array("mystrdate"=>strtotime($item->get_date()),"mytitle"=>$item->get_title(),"mylink"=>$item->get_permalink(),"myGroup"=>$feeditem["FeedName"],"mydesc"=>$item->get_content(),"myimage"=>$mediaImage,"mycatid"=>$feeditem["FeedCatID"],"myAuthor"=>$itemAuthor,"feedURL"=>$feeditem["FeedURL"]);
+				$myarray[] = array(	"mystrdate"=>strtotime($item->get_date()),
+									"mytitle"=>$item->get_title(),
+									"mylink"=>$item->get_permalink(),
+									"myGroup"=>$feeditem["FeedName"],
+									"mydesc"=>$item->get_content(),
+									"myExcerpt"=>$item->get_description(),
+									"myimage"=>$mediaImage,
+									"mycatid"=>$feeditem["FeedCatID"],
+									"myAuthor"=>$itemAuthor,
+									"feedURL"=>$feeditem["FeedURL"]);
 
 							unset($mediaImage);
 							unset($itemAuthor);
@@ -581,7 +590,16 @@ if (empty($myfeeds)){
 
 
 
-				$myarray[] = array("mystrdate"=>strtotime($item->get_date()),"mytitle"=>$item->get_title(),"mylink"=>$item->get_permalink(),"myGroup"=>$feeditem["FeedName"],"mydesc"=>$item->get_content(),"myimage"=>$mediaImage,"mycatid"=>$feeditem["FeedCatID"],"myAuthor"=>$itemAuthor,"feedURL"=>$feeditem["FeedURL"]);
+				$myarray[] = array(	"mystrdate"=>strtotime($item->get_date()),
+									"mytitle"=>$item->get_title(),
+									"mylink"=>$item->get_permalink(),
+									"myGroup"=>$feeditem["FeedName"],
+									"mydesc"=>$item->get_content(),
+									"myExcerpt"=>$item->get_description(),
+									"myimage"=>$mediaImage,
+									"mycatid"=>$feeditem["FeedCatID"],
+									"myAuthor"=>$itemAuthor,
+									"feedURL"=>$feeditem["FeedURL"]);
 
 
 							unset($mediaImage);
@@ -705,9 +723,9 @@ if ($targetWindow==0){
 		if(!empty($items["myAuthor"]) && $addAuthor==1){
 		 	$thisContent .=  '<span style="font-style:italic; font-size:16px;">'.$authorPrep.' <a '.$openWindow.' href='.$items["mylink"].' '.($noFollow==1 ? 'rel=nofollow':'').'">'.$items["myAuthor"].'</a></span>  ';  
 			}
-
-	
-	$thisExcerpt = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome);
+	$thisExcerpt = $items["myExcerpt"];
+	if(empty($thisExcerpt))
+		$thisExcerpt = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome);
 	
 
 	$thisContent .= $thisExcerpt;
