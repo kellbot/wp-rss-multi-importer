@@ -1206,7 +1206,12 @@ wp_rss_multi_deactivation();
 </p>
 
 <h3><?php _e("Excerpt Handling", 'wp-rss-multi-importer')?></h3>
-<p ><label class='o_textinput' for='includeExcerpt'><?php _e("Put the contents also in the excerpts field. ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_post_options[includeExcerpt]" Value="1" <?php if ($post_options['includeExcerpt']==1){echo 'checked="checked"';} ?></label>
+<p ><label class='o_textinput' for='includeExcerpt'><?php _e("Populate the excerpt with "); ?></label>
+	<select Name="rss_post_options[includeExcerpt]">
+		<option Value="1" <?php if ($post_options['includeExcerpt']==1){echo 'selected';} ?>><?php _e("the contents", 'wp-rss-multi-importer')?></option>
+		<option value="2" <?php if ($post_options['includeExcerpt']==2) echo 'selected'; ?>><?php _e("the description",'wp-rss-multi-importer'); ?></option>
+		<option value="0" <?php if ($post_options['includeExcerpt']==0) echo 'selected'; ?>><?php _e("nothing",'wp-rss-multi-importer'); ?></option>
+	</select>
 </p>
 
 

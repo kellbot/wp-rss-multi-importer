@@ -726,9 +726,6 @@ if ($targetWindow==0){
 	$thisExcerpt = $items["myExcerpt"];
 	$trimmedContent = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome);
 	
-	if(empty($thisExcerpt))
-		$thisExcerpt = $trimmedContent;
-
 	$thisContent .= $trimmedContent;
 
 	if ($addSource==1){
@@ -759,8 +756,11 @@ if ($targetWindow==0){
 	
   	$post['post_content'] = $thisContent;
 
-	if ($includeExcerpt==1){
-		$post['post_excerpt'] = $thisExcerpt;
+	switch ($includeExcerpt){
+		case 1:
+			$post['post_excerpt'] = $trimmedContent;
+		case 2: 
+			$post['post_excerpt'] = $thisExcerpt;
 	}
 
 	$mycatid=$items["mycatid"];
