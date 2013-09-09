@@ -40,7 +40,7 @@ function wp_rss_multi_importer_post_to_feed(){
 		if ($post_options['targetWindow']==0 && $post_options['active']==1){
 			add_action('wp_footer','colorbox_scripts');
 		}
-		if ($post_options['noindex']==1){
+		if (isset($post_options['noindex']) && $post_options['noindex']==1){
 			add_action('wp_head', 'rssmi_noindex_function');
 		}
 		
@@ -50,13 +50,13 @@ function wp_rss_multi_importer_post_to_feed(){
 
 
 
-function isMobile() {
+function rssmi_isMobile() {
     return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
 }
 
 function isMobileForWordPress() {
 	global $isMobileDevice;
-    if(isMobile()){
+    if(rssmi_isMobile()){
        $isMobileDevice=1;
 		}else{
  			$isMobileDevice=0;

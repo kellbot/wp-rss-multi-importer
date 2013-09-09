@@ -2,7 +2,7 @@
 /*  Plugin Name: RSS Multi Importer
   Plugin URI: http://www.allenweiss.com/wp_plugin
   Description: All-in-one solution for importing & merging multiple feeds. Make blog posts or display on a page, excerpts w/ images, 8 templates, categorize and more. 
-  Version: 2.66.3
+  Version: 2.66.7
   Author: Allen Weiss
   Author URI: http://www.allenweiss.com/wp_plugin
   License: GPL2  - most WordPress plugins are released under GPL2 license terms
@@ -12,7 +12,7 @@
 
 
 /* Set the version number of the plugin. */
-define( 'WP_RSS_MULTI_VERSION', 2.663 );
+define( 'WP_RSS_MULTI_VERSION', 2.667 );
 
  /* Set constant path to the plugin directory. */
 define( 'WP_RSS_MULTI_PATH', plugin_dir_path( __FILE__ ) );  
@@ -106,17 +106,21 @@ add_action('plugins_loaded', 'wp_rss_mi_lang_init');
 
 
 
-function wp_rss_fetchFeed($url, $timeout = 10, $forceFeed=false)
+function wp_rss_fetchFeed($url, $timeout = 10, $forceFeed=false,$showVideo=0)
   {
     # SimplePie - extended in admin_init file
 	$feed = new SimplePie_RSSMI();
 	$feed->set_feed_url($url);
 	$feed->force_feed($forceFeed);
+	if ($showVideo==1){
+		$strip_htmltags = $feed->strip_htmltags;
+		array_splice($strip_htmltags, array_search('iframe', $strip_htmltags), 1);
+		$feed->strip_htmltags($strip_htmltags);
+	}
 	$feed->enable_cache(false);
     $feed->set_timeout($timeout);
 	$feed->init();
 	$feed->handle_content_type();
-
     return $feed;
   }
 
@@ -132,7 +136,7 @@ function wp_rss_fetchFeed($url, $timeout = 10, $forceFeed=false)
 	
 
 	
-add_action('wp_footer','footer_scripts');
+add_action('wp_footer','rssmi_footer_scripts');
 
 if(!function_exists("wprssmi_hourly_feed")) {
 function wprssmi_hourly_feed() { return 0; }
@@ -165,13 +169,15 @@ add_filter( 'wp_feed_cache_transient_lifetime', 'wprssmi_hourly_feed' );
 		'cachetime'=>NULL,
 		'pinterest'=>0,
 		'maxperpage' =>0,
-		'excerptlength'=>50,
+		'excerptlength'=>NULL,
 		'noimage' => 0,
 		'sortorder' => NULL,
 		'defaultimage' => NULL,
 		'showdesc' => NULL,
 		'mytemplate' =>'',
 		'showmore'=>NULL,
+		'warnmsg'=>NULL,
+		'nofollow'=>NULL,
 		'authorprep'=>'by',
 		'windowstyle'=>NULL,
 		'morestyle' =>'[...]'
@@ -204,6 +210,7 @@ add_filter( 'wp_feed_cache_transient_lifetime', 'wprssmi_hourly_feed' );
 	$cachetime=$parms['cachetime'];
 	$pinterest=$parms['pinterest'];
 	$parmmaxperpage=$parms['maxperpage'];
+	$pnofollow=$parms['nofollow'];
 	$noimage=$parms['noimage'];
 	$mytemplate=$parms['mytemplate'];
 	$windowstyle=$parms['windowstyle'];
@@ -235,31 +242,31 @@ global $RSSdefaultImage;
 $RSSdefaultImage=$options['RSSdefaultImage'];   // 0- process normally, 1=use default for category, 2=replace when no image available
 $size = count($option_items);
 $sortDir=$options['sortbydate'];  // 1 is ascending
-$stripAll=$options['stripAll'];
+$stripAll=(isset($options['stripAll']) ? $options['stripAll'] : 0);
 $todaybefore=$options['todaybefore'];
 $adjustImageSize=$options['adjustImageSize'];
 $showDesc=$options['showdesc'];  // 1 is show
 $descNum=$options['descnum'];
 $maxperPage=$options['maxperPage'];
-$showcategory=$options['showcategory'];
+$showcategory=(isset($options['showcategory']) ? $options['showcategory'] : 0);
 $cacheMin=$options['cacheMin'];
 $maxposts=$options['maxfeed'];
-$showsocial=$options['showsocial'];
+$showsocial=(isset($options['showsocial']) ? $options['showsocial'] : 0);
 $targetWindow=$options['targetWindow'];  // 0=LB, 1=same, 2=new
 $floatType=$options['floatType'];
-$noFollow=$options['noFollow'];
-$showmore=$options['showmore'];
-$cb=$options['cb'];  // 1 if colorbox should not be loaded
+$noFollow=(isset($options['noFollow']) ? $options['noFollow'] : 0);
+$showmore=(isset($options['showmore']) ? $options['showmore'] : 0);
+$cb=(isset($options['cb']) ? $options['cb'] : null);  // 1 if colorbox should not be loaded
 $pag=$options['pag'];  // 1 if pagination
 $perPage=$options['perPage'];
 global $anyimage;
-$anyimage=$options['anyimage'];
-$addAuthor=$options['addAuthor'];
-$warnmsg=$options['warnmsg'];
-$directFetch=$options['directFetch'];
-$forceFeed=$options['forceFeed'];
+$anyimage=(isset($options['anyimage']) ? $options['anyimage'] : 0);
+$addAuthor=(isset($options['addAuthor']) ? $options['addAuthor'] : 0);
+$warnmsg=(isset($options['warnmsg']) ? $options['warnmsg'] : 0);
+$directFetch=(isset($options['directFetch']) ? $options['directFetch'] : 0);
+$forceFeed=(isset($options['forceFeed']) ? $options['forceFeed'] : 0);
 $forceFeed= ($forceFeed==1 ? True:False);
-$timeout=$options['timeout'];
+$timeout=(isset($options['timeout']) ? $options['timeout'] : 0);
 if (!isset($timeout)) {$timeout=10;}
 if (!isset($directFetch)) {$directFetch=0;}
 
@@ -274,6 +281,8 @@ if(!is_null($sortOrder)){$sortDir=$sortOrder;}
 if (!is_null($pshowmore)) {$showmore=$pshowmore;} 
 
 if (!is_null($excerptlength)) {$descNum=$excerptlength;} 
+
+if (!is_null($pnofollow)) {$noFollow=$pnofollow;} 
 
 if(empty($options['sourcename'])){
 	$attribution='';
@@ -405,6 +414,7 @@ if (empty($url)) {continue;}
 
 	$url = esc_url_raw(strip_tags($url));
 	
+	
 			if ($directFetch==1){
 				$feed = wp_rss_fetchFeed($url,$timeout,$forceFeed);
 			}else{
@@ -414,7 +424,7 @@ if (empty($url)) {continue;}
 
 
 	if (is_wp_error( $feed ) ) {
-		
+	
 		if ($dumpthis==1){
 				echo $feed->get_error_message();
 				}	
@@ -427,11 +437,13 @@ if (empty($url)) {continue;}
 		continue;
 		}
 	}
-
+	
 	$maxfeed= $feed->get_item_quantity(0);  
+	
 
 	if ($feedAuthor = $feed->get_author())
 	{
+	
 		$feedAuthor=$feed->get_author()->get_name();
 	}
 	
@@ -439,7 +451,7 @@ if (empty($url)) {continue;}
 		$feedHomePage=$feed->get_link();
 
 	}
-	
+
 
 
 //SORT DEPENDING ON SETTINGS
@@ -458,13 +470,15 @@ if (empty($url)) {continue;}
 								$mediaImage=$item->get_enclosure()->get_thumbnail();
 							}else if (!IS_NULL($item->get_enclosure()->get_link())){
 								$mediaImage=$item->get_enclosure()->get_link();	
+							}else{
+								$mediaImage=null;
 							}
 						}
 						
 						
 						if ($itemAuthor = $item->get_author())
 						{
-							$itemAuthor=$item->get_author()->get_name();
+							$itemAuthor=(!IS_NULL($item->get_author()->get_name()) ? $item->get_author()->get_name() : $item->get_author()->get_email());
 						}else if (!IS_NULL($feedAuthor)){
 							$itemAuthor=$feedAuthor;
 							
@@ -483,8 +497,8 @@ if (empty($url)) {continue;}
 
 		for ($i=0;$i<=$maxposts-1;$i++){
 				$item = $feed->get_item($i);
-			
-			
+	
+	
 				if (empty($item))	continue;	
 				
 							
@@ -497,16 +511,18 @@ if (empty($url)) {continue;}
 					$mediaImage=$item->get_enclosure()->get_thumbnail();
 				}else if (!IS_NULL($item->get_enclosure()->get_link())){
 					$mediaImage=$item->get_enclosure()->get_link();	
+				}else{
+					$mediaImage=null;
 				}	
 			}
 		
-			
-			
+	
 			
 			
 			if ($itemAuthor = $item->get_author())
 			{
-				$itemAuthor=$item->get_author()->get_name();
+			$itemAuthor=(!IS_NULL($item->get_author()->get_name()) ? $item->get_author()->get_name() : $item->get_author()->get_email());
+			
 			}else if (!IS_NULL($feedAuthor)){
 				$itemAuthor=$feedAuthor;	
 			}
@@ -596,10 +612,12 @@ $todayStamp=0;
 $idnum=0;
 
 //for pagination
-$currentPage = trim($_REQUEST[pg]);
+
+$currentPage = (isset($_REQUEST['pg']) ? trim($_REQUEST['pg']): NULL);
 $currentURL = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]; 
 $currentURL = str_replace( '&pg='.$currentPage, '', $currentURL );
 $currentURL = str_replace( '?pg='.$currentPage, '', $currentURL );
+
 
 if ( strpos( $currentURL, '?' ) == 0 ){
 	$currentURL=$currentURL.'?';

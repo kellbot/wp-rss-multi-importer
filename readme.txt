@@ -4,22 +4,17 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: rss, atom, feeds, aggregation, aggregator, import, syndication, autoblog, widget
 Requires at least: 3.1
 Tested up to: 3.6
-Stable tag: 2.66.3
-Imports & merges multiple feeds. Make blog posts or display on a page, excerpts w/ images, 8 templates, categorize and more.
+Stable tag: 2.66.7
+Aggregate RSS feeds. Auto post or use shortcode, excerpts w/ images, 9 templates, categorize and more.
 
 == Description ==
 
-All-In-One solution for importing, merging and displaying RSS and Atom feeds on your Wordpress site.  Using this plugin you can do 3 things (separately or at the same time):
+All-In-One solution for importing, merging and displaying RSS and Atom feeds on your Wordpress site.  Using this plugin you can do 4 things (separately or at the same time):
 
-
-<blockquote>
-<ul>
-<li>Display the aggregated feed items on a page in one of **8 different templates that you can customize** </li>
-<li>**Create blog posts (autoblog)** from the feed items so readers can comment on them</li>
-<li>Display the aggregated feed items in a theme widget, in one of 3 different displays</li>
-</ul>
-</blockquote>
-
+* Display the aggregated feed items on a page in one of __9 different templates that you can customize__ 
+* __Create blog posts (autoblog)__ from the feed items so readers can comment on them
+* Display the aggregated feed items in a __theme widget__, in one of 3 different displays
+* Display the aggregated feed items in __your own RSS feed__
 
 = Newest Features =
 
@@ -32,10 +27,11 @@ Feed to Post has options to make the image into a Featured Image and auto-remove
 
 = Main Features =
 
-* Templates - choose from 8 different templates, create and style your own and save it
+* Templates - choose from 9 different templates, create and style your own and save it
 * Import feed items (like Google news) and creates blog posts so readers can comment on them..and put the posts into your own blog categories
 * When posting to your blog, have the image be the Featured Image which you can use in the most current themes
 * Auto remove posts to your blog based on expiration time
+* Imports YouTube and Vimeo videos in iFrame format
 
 = More Features =
 
@@ -123,6 +119,14 @@ Go here to find [__more FAQs__](http://www.allenweiss.com/faqs)
 
 == Change Log ==
 
+= Version 2.66.7 =
+* Fixed bugs and added more flexibility to author name and email, widget now has nofollow.
+= Version 2.66.6 =
+* Fixed bug that caused some people who updated the plugin lost lightbox functionality.  Added new template.
+= Version 2.66.5 =
+* Several bugs fixed, including a major one that kept some new feed items to be posted using the Feed to Post.  Additional shortcode parameters added. Cleaned up code for those who had debug on.
+= Version 2.66.4 =
+* Using Feed to Post, video from YouTube and other sources can now be embedded into posts. More scheduling options added. More links to FAQs added. New template added. Several bugs fixed.
 = Version 2.66.3 =
 * Fixed bugs found in earlier version that prohibited some excerpts and video images from showing.
 = Version 2.66.2 =
