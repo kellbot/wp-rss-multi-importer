@@ -574,7 +574,7 @@ $directFetch=1;
 									"mytitle"=>$item->get_title(),
 									"mylink"=>$item->get_permalink(),
 									"myGroup"=>$feeditem["FeedName"],
-									"mydesc"=>$item->get_content(),
+									"myContent"=>$item->get_content(),
 									"myExcerpt"=>$item->get_description(),
 									"myimage"=>$mediaImage,
 									"mycatid"=>$feeditem["FeedCatID"],
@@ -631,7 +631,7 @@ $directFetch=1;
 									"mytitle"=>$item->get_title(),
 									"mylink"=>$item->get_permalink(),
 									"myGroup"=>$feeditem["FeedName"],
-									"mydesc"=>$item->get_content(),
+									"myContent"=>$item->get_content(),
 									"myExcerpt"=>$item->get_description(),
 									"myimage"=>$mediaImage,
 									"mycatid"=>$feeditem["FeedCatID"],
@@ -729,67 +729,56 @@ foreach($myarray as $items) {
 
 
 
-			$wpdb->flush();
-			$mypostids = $wpdb->get_results("select post_id from $wpdb->postmeta where meta_key = 'rssmi_source_link' and meta_value like '%".$thisLink."%'");
-			
-	//	if (!empty($items["mytitle"])){
-			$myposttitle=$wpdb->get_results("select post_title from $wpdb->posts where post_title like '%".mysql_real_escape_string(trim($items["mytitle"]))."%'");	
-	//	}
-			
+	$wpdb->flush();
+
+	//check to see if the post is already in the db
+	$mypostids = $wpdb->get_results("select post_id from $wpdb->postmeta where meta_key = 'rssmi_source_link' and meta_value like '%".$thisLink."%'");		
+	$myposttitle=$wpdb->get_results("select post_title from $wpdb->posts where post_title like '%".mysql_real_escape_string(trim($items["mytitle"]))."%'");	
+
+
+	//if not, import it
+	if ((empty( $mypostids ) && $mypostids !== false) && empty($myposttitle) ){ 
 		
+		$added=$added+1;
 		
-		if ((empty( $mypostids ) && $mypostids !== false) && empty($myposttitle) ){ 
-		
-		
-			$added=$added+1;
-		
-			$thisContent='';
-  			$post = array();  
+		$thisContent='';
+		$post = array();  
 
-  			$post['post_status'] = $post_status;
+		$post['post_status'] = $post_status;
 
 
 
-	if ($overridedate==1){
-		$post['post_date'] = $rightNow;  	
-	}else{
-  		$post['post_date'] = date('Y-m-d H:i:s',$items['mystrdate']);
-	}
+		if ($overridedate==1){
+			$post['post_date'] = $rightNow;  	
+		}else{
+			$post['post_date'] = date('Y-m-d H:i:s',$items['mystrdate']);
+		}
 
+		$post['post_title'] = trim($items["mytitle"]);
 
-
-
-	$post['post_title'] = trim($items["mytitle"]);
-
-
-
-	$authorPrep="By ";
+		$authorPrep="By ";
 
 		if(!empty($items["myAuthor"]) && $addAuthor==1){
 		 	$thisContent .=  '<span style="font-style:italic; font-size:16px;">'.$authorPrep.' <a '.$openWindow.' href='.$items["mylink"].' '.($noFollow==1 ? 'rel=nofollow':'').'">'.$items["myAuthor"].'</a></span>  ';  
 		}
 
-	$trimmedContent = showexcerpt($items["mydesc"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome,$items["feedHomePage"]);
+		$trimmedContent = showexcerpt($items["myContent"],$descNum,$openWindow,$stripAll,$items["mylink"],$adjustImageSize,$float,$noFollow,$items["myimage"],$items["mycatid"],$stripSome,$items["feedHomePage"]);
 	
-	if ((strpos($items["mylink"],'www.youtube.com')>0 || strpos($items["mylink"],'player.vimeo')>0 ) && $showVideo==1){
-		
-		if ($vt=='yt'){
-			$trimmedContent = rssmi_yt_video_content($items["mydesc"])."<br>";
-		}else if ($vt=='vm'){
-			$trimmedContent = rssmi_vimeo_video_content($items["mydesc"])."<br>";
+		if ((strpos($items["mylink"],'www.youtube.com')>0 || strpos($items["mylink"],'player.vimeo')>0 ) && $showVideo==1){
+			
+			if ($vt=='yt'){
+				$trimmedContent = rssmi_yt_video_content($items["myContent"])."<br>";
+			}else if ($vt=='vm'){
+				$trimmedContent = rssmi_vimeo_video_content($items["myContent"])."<br>";
+			}
+			$trimmedContent .= '<iframe title=".$items["mytitle"]." width="420" height="315" src="'.$items["mylink"].'" frameborder="0" allowfullscreen allowTransparency="true"></iframe>';
 		}
-
-	//	$thisContent.="\r\n".$orig_video_link."\r\n";
-
-		$trimmedContent .= '<iframe title=".$items["mytitle"]." width="420" height="315" src="'.$items["mylink"].'" frameborder="0" allowfullscreen allowTransparency="true"></iframe>';
-	}
 	
 
 	$thisContent .= $trimmedContent;
 
 
 	if ($addSource==1){
-		
 		
 		switch ($sourceAnchorText) {
 		    case 1:
@@ -814,15 +803,14 @@ foreach($myarray as $items) {
 	$thisContent .= '<span style="margin-left:10px;"><a href="http://www.facebook.com/sharer/sharer.php?u='.$items["mylink"].'"><img src="'.WP_RSS_MULTI_IMAGES.'facebook.png"/></a>&nbsp;&nbsp;<a href="http://twitter.com/intent/tweet?text='.rawurlencode($items["mytitle"]).'%20'.$items["mylink"].'"><img src="'.WP_RSS_MULTI_IMAGES.'twitter.png"/></a>&nbsp;&nbsp;<a href="http://plus.google.com/share?url='.rawurlencode($items["mylink"]).'"><img src="'.WP_RSS_MULTI_IMAGES.'gplus.png"/></a></span>';
 	}
 	
-//	$thisContent.="\r\n".$vitem."\r\n";
-	
+
   	$post['post_content'] = $thisContent;
 
 	switch ($includeExcerpt){
 		case 1:
 			$post['post_excerpt'] = $trimmedContent;
 		case 2: 
-			$post['post_excerpt'] = $thisExcerpt;
+			$post['post_excerpt'] = $items["myExcerpt"];
 	}
 
 	$mycatid=$items["mycatid"];
