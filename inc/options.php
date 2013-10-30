@@ -2,6 +2,9 @@
 
 
 
+
+
+
 //  Categories Page
 
 function wp_rss_multi_importer_category_images_page() {
@@ -46,25 +49,12 @@ if( $i % 2== 0 ) continue;
 	$j = cat_get_id_number($key);
 	$textUpper=strtoupper($options[$key]);
 		if (!empty($options_images) ) {
-	//$cat_default_image=$options_images[$j]['imageURL'];
+
 	$cat_default_image=(isset($options_images[$j]['imageURL']) ? $options_images[$j]['imageURL'] : null);
-	
-	//$cat_default_tags=$options_images[$j]['tags'];
-	
 	$cat_default_tags=(isset($options_images[$j]['tags']) ? $options_images[$j]['tags'] : null);
-	
-	//$cat_default_filterwords=$options_images[$j]['filterwords'];
-	
 	$cat_default_filterwords=(isset($options_images[$j]['filterwords']) ? $options_images[$j]['filterwords'] : null);
-	
-	
-	//$cat_default_filterwords_exclude=$options_images[$j]['exclude'];
-	
 	$cat_default_filterwords_exclude=(isset($options_images[$j]['exclude']) ? $options_images[$j]['exclude'] : null);
-	
-	
-	
-	
+
 	if (isset($cat_default_filterwords_exclude) && $cat_default_filterwords_exclude==1) {$checkmsg='checked=checked';}else{$checkmsg='';}
 		}
 	
@@ -235,7 +225,7 @@ function wp_rss_multi_importer_intro_page() {
 											
 												
 													<div class="txtorange">Join MarketingProfs.com</div>
-														<div class="txtwhite">Over 600,000 have already</div>
+														<div class="txtwhite">Over 620,000 have already</div>
 													<div class="txtorange">Your Free Membership Includes:</div>
 													<ul class="padding_nomargin txtleft" style="margin-left:30px;padding-top:5px;padding-bottom:5px;margin-top:0px;">
 														<li style="margin:3px;"><b>FREE</b> access to all marketing articles</li>
@@ -404,8 +394,8 @@ if ($options['maxperPage']=='' || $options['maxperPage']=='NULL') {
 
 		</SELECT></p>
 	
-<h3><?php _e("Number of Posts and Pagination", 'wp-rss-multi-importer')?></h3>
-<p><label class='o_textinput' for='maxfeed'><?php _e("Number of Entries per Feed", 'wp-rss-multi-importer')?></label>
+<h3><?php _e("Number of Posts, Pagination and Load More", 'wp-rss-multi-importer')?></h3>
+<p><label class='o_textinput' for='maxfeed'><?php _e("Number of Posts per Feed", 'wp-rss-multi-importer')?></label>
 <SELECT NAME="rss_import_options[maxfeed]">
 <OPTION VALUE="1" <?php if($options['maxfeed']==1){echo 'selected';} ?>>1</OPTION>
 <OPTION VALUE="2" <?php if($options['maxfeed']==2){echo 'selected';} ?>>2</OPTION>
@@ -423,8 +413,8 @@ if ($options['maxperPage']=='' || $options['maxperPage']=='NULL') {
 <OPTION VALUE="80" <?php if($options['maxfeed']==80){echo 'selected';} ?>>80</OPTION>
 </SELECT></p>
 
-
-<p><label class='o_textinput' for='maxperPage'><?php _e("Number of Entries per Page of Output (<a href=\"http://www.allenweiss.com/faqs/how-does-the-number-of-entries-per-feed-and-page-or-fetch-work//\" target=\"_blank\">GO HERE TO SEE HOW TO SET THIS OPTION</a>)", 'wp-rss-multi-importer')?></label>
+<span id="posts_per_pag_options" <?php if($options['pag']==1 || $options['pag']==2 || $options['pag']==3){echo 'style="display:none"';}?>>
+<p><label class='o_textinput' for='maxperPage'><?php _e("Number of Posts Shown per Page of Output (<a href=\"http://www.allenweiss.com/faqs/how-does-the-number-of-entries-per-feed-and-page-or-fetch-work//\" target=\"_blank\">GO HERE TO SEE HOW TO SET THIS OPTION</a>)", 'wp-rss-multi-importer')?></label>
 <SELECT NAME="rss_import_options[maxperPage]">
 <OPTION VALUE="5" <?php if($options['maxperPage']==5){echo 'selected';} ?>>5</OPTION>
 <OPTION VALUE="10" <?php if($options['maxperPage']==10){echo 'selected';} ?>>10</OPTION>
@@ -432,23 +422,28 @@ if ($options['maxperPage']=='' || $options['maxperPage']=='NULL') {
 <OPTION VALUE="30" <?php if($options['maxperPage']==30){echo 'selected';} ?>>30</OPTION>
 <OPTION VALUE="40" <?php if($options['maxperPage']==40){echo 'selected';} ?>>40</OPTION>
 <OPTION VALUE="50" <?php if($options['maxperPage']==50){echo 'selected';} ?>>50</OPTION>
+<OPTION VALUE="100" <?php if($options['maxperPage']==100){echo 'selected';} ?>>100</OPTION>
 </SELECT></p>
 
+</span>
 
 
-
-<p><label class='o_textinput' for='pag'><?php _e("Do you want pagination?", 'wp-rss-multi-importer')?></label>
+<p><label class='o_textinput' for='pag'><?php _e("Do you want to use Pagination or Load More to show the results?", 'wp-rss-multi-importer')?></label>
 <SELECT NAME="rss_import_options[pag]" id="pagination">
-<OPTION VALUE="1" <?php if($options['pag']==1){echo 'selected';} ?>><?php _e("Yes", 'wp-rss-multi-importer')?></OPTION>
-<OPTION VALUE="0" <?php if($options['pag']==0){echo 'selected';} ?>><?php _e("No", 'wp-rss-multi-importer')?></OPTION>
-</SELECT>  <?php _e("(Note: this will override the Number of Entries per Page of Output)", 'wp-rss-multi-importer')?></p>
+<OPTION VALUE="0" <?php if($options['pag']==0){echo 'selected';} ?>><?php _e("None", 'wp-rss-multi-importer')?></OPTION>
+<OPTION VALUE="1" <?php if($options['pag']==1){echo 'selected';} ?>><?php _e("Pagination", 'wp-rss-multi-importer')?></OPTION>
+<OPTION VALUE="2" <?php if($options['pag']==2){echo 'selected';} ?>><?php _e("Load More with Click", 'wp-rss-multi-importer')?></OPTION>
+<!--<OPTION VALUE="3" <?php if($options['pag']==3){echo 'selected';} ?>><?php _e("Load More with Scroll", 'wp-rss-multi-importer')?></OPTION>-->
+
+</SELECT> </p>
 
 
 
-<span id="pag_options" <?php if($options['pag']==0){echo 'style="display:none"';}?>>
+<span id="pag_options" <?php if($options['pag']==0 ){echo 'style="display:none"';}?>>
 	
-	<p style="padding-left:15px"><label class='o_textinput' for='perPage'><?php _e("Number of Posts per Page for Pagination", 'wp-rss-multi-importer')?></label>
+	<p style="padding-left:15px"><label class='o_textinput' for='perPage'><?php _e("Number of Posts per Page for Pagination or per click on Load More", 'wp-rss-multi-importer')?></label>
 	<SELECT NAME="rss_import_options[perPage]">
+	<OPTION VALUE="3" <?php if($options['perPage']==3){echo 'selected';} ?>>3</OPTION>
 	<OPTION VALUE="6" <?php if($options['perPage']==6){echo 'selected';} ?>>6</OPTION>
 	<OPTION VALUE="12" <?php if($options['perPage']==12){echo 'selected';} ?>>12</OPTION>
 	<OPTION VALUE="15" <?php if($options['perPage']==15){echo 'selected';} ?>>15</OPTION>
@@ -506,6 +501,8 @@ if ($options['maxperPage']=='' || $options['maxperPage']=='NULL') {
 
 <span id="secret" <?php if($options['showdesc']==0){echo 'style="display:none"';}?>>
 	
+		<p style="padding-left:15px"><label class='o_textinput' for='stripSome'><?php _e("Keep limited html in the excerpt (&lt;a&gt;,&lt;br&gt;,&lt;p&gt;)  ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_import_options[stripSome]" Value="1" <?php if (isset($options['stripSome']) && $options['stripSome']==1){echo 'checked="checked"';} ?></label> </p>
+	
 	
 	<p style="padding-left:15px"><label class='o_textinput' for='showmore'><?php _e("Let your readers determine if they want to see the excerpt with a show-hide option. ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_import_options[showmore]" Value="1" <?php if (isset($options['showmore']) && $options['showmore']==1){echo 'checked="checked"';} ?></label>
 	</p>	
@@ -562,7 +559,7 @@ echo 'Your server is not configured to accept images from outside sources.  Plea
 
 
 <h3><?php _e("Get Social", 'wp-rss-multi-importer')?></h3>
-<p ><label class='o_textinput' for='showsocial'><?php _e("Add social icons (Twitter and Facebook) to each post. ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_import_options[showsocial]" Value="1" <?php if (isset($options['showsocial']) && $options['showsocial']==1){echo 'checked="checked"';} ?></label>
+<p ><label class='o_textinput' for='showsocial'><?php _e("Add social icons (Twitter, Facebook, and Google+) to each post. ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_import_options[showsocial]" Value="1" <?php if (isset($options['showsocial']) && $options['showsocial']==1){echo 'checked="checked"';} ?></label>
 </p>
 
 
@@ -1183,7 +1180,7 @@ wp_rss_multi_deactivation();
 <span id="stripAllsecret" <?php if($post_options['stripAll']==1){echo 'style="display:none"';}?>>
 	
 	<p ><label class='o_textinput' for='floatType'><?php _e("Float images to the left.", 'wp-rss-multi-importer')?>  <input type="checkbox" Name="rss_post_options[floatType]" Value="1" <?php if ($post_options['floatType']==1){echo 'checked="checked"';} ?></label></p>
-	
+		
 	
 	<p ><label class='o_textinput' for='stripSome'><?php _e("Eliminate all hyperlinks   ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_post_options[stripSome]" Value="1" <?php if (isset($post_options['stripSome']) && $post_options['stripSome']==1){echo 'checked="checked"';} ?></label> </p>
 
@@ -1224,7 +1221,7 @@ wp_rss_multi_deactivation();
 
 
 <h3><?php _e("Get Social", 'wp-rss-multi-importer')?></h3>
-<p ><label class='o_textinput' for='showsocial'><?php _e("Add social icons (Twitter and Facebook) to each post ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_post_options[showsocial]" Value="1" <?php if (isset($post_options['showsocial']) && $post_options['showsocial']==1){echo 'checked="checked"';} ?></label>
+<p ><label class='o_textinput' for='showsocial'><?php _e("Add social icons (Twitter, Facebook, and Google+) to each post ", 'wp-rss-multi-importer')?><input type="checkbox" Name="rss_post_options[showsocial]" Value="1" <?php if (isset($post_options['showsocial']) && $post_options['showsocial']==1){echo 'checked="checked"';} ?></label>
 </p>
 
 <h3><?php _e("Comment Status", 'wp-rss-multi-importer')?></h3>
@@ -1266,6 +1263,7 @@ wp_rss_multi_deactivation();
 <OPTION VALUE="21" <?php if($post_options['expiration']==21){echo 'selected';} ?>>3 Weeks</OPTION>
 <OPTION VALUE="28" <?php if($post_options['expiration']==28){echo 'selected';} ?>>4 Weeks</OPTION>
 <OPTION VALUE="56" <?php if($post_options['expiration']==56){echo 'selected';} ?>>2 Months</OPTION>
+<OPTION VALUE="365" <?php if($post_options['expiration']==365){echo 'selected';} ?>>1 Year</OPTION>
 </SELECT></p>
 
 <p ><label class='o_textinput' for='oldPostStatus'><?php _e("Move posts to what status?", 'wp-rss-multi-importer')?></label>

@@ -72,7 +72,9 @@ function startSimplePie(){
 	if(! class_exists('SimplePie')){
 	     		require_once(ABSPATH . WPINC . '/class-simplepie.php');
 	}
+
 	class SimplePie_RSSMI extends SimplePie {}	
+
 	
 }
 add_action('init', 'startSimplePie');
@@ -202,7 +204,7 @@ function wp_rss_multi_importer_display( $active_tab = '' ) {
 			
 			 	global $myListTable;
 				my_add_menu_items();
-				add_options();
+				rssmi_add_options();
 				my_render_list_page();
 				$myListTable->admin_header(); 
 				

@@ -22,7 +22,9 @@ if (!IS_NULL($feedID) || !IS_NULL($catID) ){
 }
 
 
+
 	
+
 
 function deleteArticles(){
 
@@ -77,6 +79,7 @@ function setFeaturedImage($post_id,$url,$featuredImageTitle){
 //					echo $post_result);
 		
 }
+
 
 
 
@@ -244,7 +247,7 @@ function getAllWPCats(){
 
 
 function wp_rss_multi_importer_post($feedID=NULL,$catID=NULL){
-	
+
  $postMsg = FALSE; 
 
 
@@ -398,14 +401,13 @@ global $maximgwidth;
 $maximgwidth=$post_options['maximgwidth'];;
 $descNum=$post_options['descnum'];
 $stripAll=$post_options['stripAll'];
-$stripSome=$post_options['stripSome'];
 $maxperfetch=$post_options['maxperfetch'];
 $showsocial=$post_options['showsocial'];
 $overridedate=$post_options['overridedate'];
 $commentStatus=$post_options['commentstatus'];
 $noFollow=(isset($post_options['noFollow']) ? $post_options['noFollow'] : 0 );
 $floatType=(isset($post_options['floatType']) ? $post_options['floatType'] : 0);
-
+$stripSome=(isset($post_options['stripSome']) ? $post_options['stripSome'] : null);
 if ($commentStatus=='1'){
 	$comment_status='closed';
 }else{
@@ -513,7 +515,7 @@ $directFetch=1;
 						}else{
 							$feed = fetch_feed($url);
 						}
-
+					
 	
 	
 
@@ -614,15 +616,7 @@ $directFetch=1;
 
 				}
 
-/*  maybe useful for later on
-
-				preg_match('|<iframe [^>]*(src="([^"]+)")[^>]*|', $item->get_content(), $matches);
-				if (!empty($matches)){
-					$iframeURL= $matches[2];
-					}else{
-					$iframeURL='';	
-					}
-	*/			
+		
 
 
 
@@ -699,7 +693,7 @@ $wpdb->show_errors = true;
 
 foreach($myarray as $items) {
 
-	
+
 	$total = $total +1;
 	if ($total>$maxperfetch) break;
 	$thisLink=trim($items["mylink"]);
@@ -709,13 +703,13 @@ foreach($myarray as $items) {
 	// VIDEO CHECK
 	if ($targetWindow==0  || $showVideo==1){
 		$vitem=$items["mylink"];
-		$getVideoArray=rssmi_video($items["mylink"]);
+		$getVideoArray=rssmi_video($items["mylink"],$targetWindow);
 		$openWindow=$getVideoArray[1];
 		$items["mylink"]=$getVideoArray[0];
 		$vt=$getVideoArray[2];
 	}
 	
-	
+
 	
 
 	
@@ -773,7 +767,6 @@ foreach($myarray as $items) {
 			}
 			$trimmedContent .= '<iframe title=".$items["mytitle"]." width="420" height="315" src="'.$items["mylink"].'" frameborder="0" allowfullscreen allowTransparency="true"></iframe>';
 		}
-	
 
 	$thisContent .= $trimmedContent;
 
@@ -803,7 +796,6 @@ foreach($myarray as $items) {
 	$thisContent .= '<span style="margin-left:10px;"><a href="http://www.facebook.com/sharer/sharer.php?u='.$items["mylink"].'"><img src="'.WP_RSS_MULTI_IMAGES.'facebook.png"/></a>&nbsp;&nbsp;<a href="http://twitter.com/intent/tweet?text='.rawurlencode($items["mytitle"]).'%20'.$items["mylink"].'"><img src="'.WP_RSS_MULTI_IMAGES.'twitter.png"/></a>&nbsp;&nbsp;<a href="http://plus.google.com/share?url='.rawurlencode($items["mylink"]).'"><img src="'.WP_RSS_MULTI_IMAGES.'gplus.png"/></a></span>';
 	}
 	
-
   	$post['post_content'] = $thisContent;
 
 	switch ($includeExcerpt){
@@ -876,6 +868,16 @@ foreach($myarray as $items) {
 		if ($setFeaturedImage==1 || $setFeaturedImage==2){
 			global $featuredImage;
 			if (isset($featuredImage)){
+				
+				//facebook correction
+				if (strpos($featuredImage,"fbcdn")>0){
+					$fb_feature_img = str_replace('_s.jpg', '_n.jpg', $featuredImage);
+						if (rssmi_remoteFileExists($fb_feature_img)){
+							$featuredImage = str_replace($featuredImage, $fb_feature_img, $featuredImage);
+						}
+				}
+
+				
 				$featuredImageTitle=trim($items["mytitle"]);	
 				setFeaturedImage($post_id,$featuredImage,$featuredImageTitle);
 				unset($featuredImage);

@@ -1,5 +1,6 @@
 <?php
-	
+$readable='<div class="rssmi_wrap">';
+
 		$readable.="<ul class='wprssmi_bullet_list'>";
 	//  don't mess with this php code 
 	foreach($myarray as $items) {
@@ -14,7 +15,7 @@
 	
 	
 
-	$readable .= '<li class="title"><a '.$openWindow.' href='.$items["mylink"].' '.($noFollow==1 ? 'rel=nofollow':'').'">'.$items["mytitle"].'</a>  <span class="date">'. date_i18n("D, M d, Y",$items["mystrdate"]).'</span></li>';
+	$readable .= '<li class="title"><a '.$openWindow.' href='.$items["mylink"].' '.($noFollow==1 ? 'rel=nofollow':'').'>'.$items["mytitle"].'</a>  <span class="date">'. date_i18n("D, M d, Y",$items["mystrdate"]).'</span></li>';
 
 	
 	
@@ -22,7 +23,7 @@
 }  	//  don't mess with this php code 
 
 		$readable.="</ul>";					
-
+	 $readable .=  '</div>';
 
 
 ?>
