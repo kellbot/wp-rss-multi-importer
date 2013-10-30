@@ -548,7 +548,7 @@ $directFetch=1;
 	//SORT DEPENDING ON SETTINGS
 
 		if($sortDir==1){
-
+				
 			for ($i=$maxfeed-1;$i>=$maxfeed-$maxposts;$i--){
 				$item = $feed->get_item($i);
 				 if (empty($item))	continue;
@@ -571,7 +571,8 @@ $directFetch=1;
 							}else if (!IS_NULL($feedAuthor)){
 								$itemAuthor=$feedAuthor;
 
-							}
+				
+				}
 				$myarray[] = array(	"mystrdate"=>strtotime($item->get_date()),
 									"mytitle"=>$item->get_title(),
 									"mylink"=>$item->get_permalink(),
@@ -606,7 +607,7 @@ $directFetch=1;
 						$mediaImage=$item->get_enclosure()->get_link();	
 					}	
 				}
-
+				error_log("Media Image " . var_export($mediaImage));
 
 				if ($itemAuthor = $item->get_author())
 				{
